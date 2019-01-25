@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,9 +16,8 @@ namespace oneminute12
             public int Age { get; set; }
         }
 
-        public static class ExpressionHelper<T>
+        public class ExpressionHelper<T>
         {
-
             class MyExpressionVisitor : ExpressionVisitor
             {
                 private ParameterExpression _replaceVar;
@@ -34,24 +34,38 @@ namespace oneminute12
                 public MyExpressionVisitor(ParameterExpression replaceVar) => _replaceVar = replaceVar;
             }
 
-            public static Expression<Func<T, bool>> Create(Expression<Func<T, bool>> func) => func;
+            private Expression<Func<T, bool>> _source;
+            ParameterExpression _pe = Expression.Parameter(typeof(T), "a");
 
-            public static Expression<Func<T, bool>> And(Expression<Func<T, bool>> source, Expression<Func<T, bool>> expr)
+            public Expression<Func<T, bool>> Expr => _source;
+
+            public static ExpressionHelper<T> Create(Expression<Func<T, bool>> func)
             {
-                ParameterExpression pe = Expression.Parameter(typeof(T), "a");
-                var visitor = new MyExpressionVisitor(pe);
-                var replaceSource = visitor.ReplaceVars(source);
-                var replaceDest = visitor.ReplaceVars(expr);
-                return Expression.Lambda<Func<T, bool>>(Expression.And(replaceSource.Body, replaceDest.Body), pe);
+                var result = new ExpressionHelper<T> { _source = func };
+                return result;
             }
 
-            public static Expression<Func<T, bool>> Or(Expression<Func<T, bool>> source, Expression<Func<T, bool>> expr)
+            public ExpressionHelper<T> And(Expression<Func<T, bool>> expr)
             {
-                ParameterExpression pe = Expression.Parameter(typeof(T), "a");
-                var visitor = new MyExpressionVisitor(pe);
-                var replaceSource = visitor.ReplaceVars(source);
+                var visitor = new MyExpressionVisitor(_pe);
+                var replaceSource = visitor.ReplaceVars(_source);
                 var replaceDest = visitor.ReplaceVars(expr);
-                return Expression.Lambda<Func<T, bool>>(Expression.Or(replaceSource.Body, replaceDest.Body), pe);
+                _source = Expression.Lambda<Func<T, bool>>(Expression.And(replaceSource.Body, replaceDest.Body), _pe);
+                return this;
+            }
+
+            public ExpressionHelper<T> Or(Expression<Func<T, bool>> expr)
+            {
+                var visitor = new MyExpressionVisitor(_pe);
+                var replaceSource = visitor.ReplaceVars(_source);
+                var replaceDest = visitor.ReplaceVars(expr);
+                _source = Expression.Lambda<Func<T, bool>>(Expression.Or(replaceSource.Body, replaceDest.Body), _pe);
+                return this;
+            }
+
+            private ExpressionHelper()
+            {
+
             }
         }
 
@@ -65,11 +79,12 @@ namespace oneminute12
                 new Person() {Name = "jerry", Age = 14},
             };
 
-            var expr = ExpressionHelper<Person>.Create(a => a.Name == "code6421");
-            expr = ExpressionHelper<Person>.And(expr, a => a.Age == 12);
-            expr = ExpressionHelper<Person>.Or(expr, a => a.Name == "ark");
+            var expr = ExpressionHelper<Person>.Create(
+                a => a.Name == "code6421").And(
+                a => a.Age == 12).Or(
+                a => a.Name == "ark");
 
-            foreach (var item in list.AsQueryable().Where(expr))
+            foreach (var item in list.AsQueryable().Where(expr.Expr))
                 Console.WriteLine(item.Name);
             Console.ReadLine();
         }
