@@ -25,18 +25,17 @@ namespace oneminute20
 
         static string TestPassByClass(Person p)
         {
-            p.Age = p.Age + DateTime.Now.Minute;
             return p.Name + p.Age + p.Credit;
         }
 
         static string TestPassByStruct(PersonStruct p)
         {
-            p.Age = p.Age + DateTime.Now.Minute;
             return p.Name + p.Age + p.Credit;
         }
 
         static void Main(string[] args)
         {
+
         }
     }
 }
