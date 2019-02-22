@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2B246756-B35F-47FB-9DD3-869C4FD94896}</ProjectGuid>
+    <ProjectGuid>{48F8635B-F115-4FFC-BDBA-746E2A6D9CF4}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>oneminute20</RootNamespace>
-    <AssemblyName>oneminute20</AssemblyName>
+    <RootNamespace>oneminute21</RootNamespace>
+    <AssemblyName>oneminute21</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -17,7 +17,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
